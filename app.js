@@ -23,6 +23,7 @@ function startTime() {
     m = checkTime(m);
     s = checkTime(s);
     document.querySelector(".clockArea").innerHTML=h + ":" + m + ":" + s;
+    var t = setTimeout(startTime, 500)
   }
 
 startTime();
@@ -270,6 +271,7 @@ if(emptyInputValidator()==="FIRSTNAME"){
             finalizeData(pobUpBoxSetUp,updateUser);
         }
     },function(error){ 
+        console.log("hello");
         console.log("this is err" + error)
     }  //  not quite sure how the "reject" could be called in the async function which fires the 2nd function of .then      
 )                                                                            //....seems to fire if any error is found in the asyn fn() and wrap it in promise
