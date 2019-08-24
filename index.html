@@ -17,11 +17,11 @@
 <div class="time">
             Time:&nbsp   <!-- Time &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Date  -->
 </div>
-<div style="background-color:#0071bb;color:white"class="ui fixed inverted menu">
+<div style="background-color:#0071bb;color:white"class="ui fixed pointing menu">
         <div class="ui container">
                 <div class="header item" style="color:white"><i class="tv icon"></i style="color:white">Clinton Electronics: User Information</div>
-                <a href="" class="item" style="color:white">Home</a>
-                <a href="" class="item" style="color:white">Back</a>
+                <a href="#" class="item" style="color:white">Home</a>
+                <a href="#" class="item right" style="color:white;background-color:#8be712;font-weight: bold">Your Edit History </a>
         </div>
 </div>
 <div class="test">
@@ -96,27 +96,40 @@
 </div>
 <div class="popBox"> <!--flex column  -->
         <div class="popInfoContain">
-       <h1>Are you sure you would like to Change your user data? ..Your new user data is below: </h1>
-       <div class="popInfoContain2">
-               <div class="popupDataRow">
-                        <div>First Name:</div><div class="popupFname"></div>
-               </div>
-               <div class="popupDataRow">
-                        <div>Last Name:</div><div class="popupLname"></div>
-               </div>
-               <div class="popupDataRow">
-                        <div>Email:</div><div class="popupEmail"></div>
+                <h1>Are you sure you would like to Change your user data? ..Your new user data is below: </h1>
+                <div class="popInfoContain2">
+                        <div class="popupDataRow">
+                                        <div>First Name:</div><div class="popupFname"></div>
+                        </div>
+                        <div class="popupDataRow">
+                                        <div>Last Name:</div><div class="popupLname"></div>
+                        </div>
+                        <div class="popupDataRow">
+                                        <div>Email:</div><div class="popupEmail"></div>
+                                </div>
+                                <div class="popupDataRow">
+                                                <div>Job Title:</div><div class="popupJobTitle"></div>
+                                </div>
+                        <div class="popupDataRow">
+                                        <div>Birthdate:</div><div class="popupBirthdate"></div>
+                        </div>
+                        <button class="submitPopUp">Yes I'm Sure</button>
+                
                 </div>
-                <div class="popupDataRow">
-                                <div>Job Title:</div><div class="popupJobTitle"></div>
+       </div>     
+</div>
+<div class="historyContainer">
+        <hr>   
+                <div class="dateAndInfo">
+                         Previous Changes...
                 </div>
-               <div class="popupDataRow">
-                        <div>Birthdate:</div><div class="popupBirthdate"></div>
-               </div>
-               <button class="submitPopUp">Yes I'm Sure</button>
-   
-       </div>
-</div>     
+        <hr> 
+        <div class="historyRow">
+                <div class="historyDate hr">03/23/2020 </div>
+                <div class="historyKey hr">First Name </div>
+                <div class="historyValue hr"> Todd </div>
+
+        </div>
 </div>
 </body>
     <script src="app.js"></script>

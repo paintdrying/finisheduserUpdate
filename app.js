@@ -35,8 +35,8 @@ startTime();
  time.appendChild(dateHolder);
 
  //submitPopUp Evemt Listener
- let submitInfoPopup=document.querySelector(".submitPopUp");
- submitInfoPopup.addEventListener('click',function(){
+ let submitInfoPopupBtn=document.querySelector(".submitPopUp");
+ submitInfoPopupBtn.addEventListener('click',function(){
     let popUp=document.querySelector('.popBox');
     popUp.style.display="none"
  });
@@ -68,6 +68,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
    document.querySelector('.ititle').value=userObj.jobTitle; 
   
     });
+
+let toggleBtn=["On"];
+
+var dropDownBtn=document.querySelector('.right'); 
+dropDownBtn.addEventListener('click',function(){
+    if(toggleBtn[0]=="On"){
+    document.querySelector('.historyContainer').style.display="none";
+    toggleBtn[0]="Off";
+    }else if(toggleBtn[0]=="Off"){
+    document.querySelector('.historyContainer').style.display="flex";
+    toggleBtn[0]="On";
+    }
+});
+
+
+
+
 ///                       "OLD WAY" OF DOING THINGS
 //----------------------------------------------------------------------------------------------
 // const quickHTTP=function(){
@@ -163,8 +180,27 @@ function putCallReset(){
         jobTitleLable.removeAttribute('style');
         jobTitleLable.innerText="Job Title";
 }
-///--------------------------------------------------------------------------------------------------------
-
+///-----------------------------------This is a note... we can pass these object so they will evaluate on PUT---------------------------------------------------------------------
+function passCurrentUserInfoInput (){
+    return currentUserInfoInput={
+        id: userObj.id,
+        email: document.querySelector('.iemail').value,
+        firstName: document.querySelector('.ifname').value,
+        lastName: document.querySelector('.ilname').value,
+        jobTitle: document.querySelector('.ititle').value,
+        birthday: document.querySelector('.ibirthdate').value
+    }
+}
+function passRenderedUserInfoInput (){
+    return renderedUserInfoInput={
+        id: userObj.id,
+        email: document.querySelector('.email').innerText,
+        firstName: document.querySelector('.fname').innerText,
+        lastName: document.querySelector('.lname').innerText,
+        jobTitle: document.querySelector('.jobtitle').innerText,
+        birthday: document.querySelector('.birthdate').innerText
+    }
+}
 let put= async () => {
 //-------------------------------Remove previous DOM validation errors
 
@@ -183,30 +219,44 @@ if(emptyInputValidator()==="FIRSTNAME"){
     return "EMAIL";
 }
 //----------------------------------------fetch using current user input----------------------------------------------------------------
+ let currentUserInfoInput=passCurrentUserInfoInput ();
+ let renderedUserInfoInput=passRenderedUserInfoInput ();
 
-    let currentUserInfo={
-        id: userObj.id,
-        email: document.querySelector('.iemail').value,
-        firstName: document.querySelector('.ifname').value,
-        lastName: document.querySelector('.ilname').value,
-        jobTitle: document.querySelector('.ititle').value,
-        birthday: document.querySelector('.ibirthdate').value
-     }
 
+ ///---------------------------This is a note...the difference between previous user and current user is stored in history
+
+ let localStorageKey=1;
+
+ propertiesThatChanged=[];
+ for(const key in currentUserInfoInput){
+        if(currentUserInfoInput[key]!==renderedUserInfoInput[key]){  
+                 propertiesThatChanged.push({[key]:renderedUserInfoInput[key]})
+                 console.log(propertiesChanged)
+             }
+          }
+  for (let i=0;i<propertiesThatChanged.length;i++){
+        let stringfiedHistoryItem=JSON.stringify(propertiesThatChanged[i]);
+         let dateUpdated=new Date(Date.now()).toDateString(); 
+         console.log(stringfiedHistoryItem)       
+           localStorage.setItem(localStorageKey,stringfiedHistoryItem,dateUpdated);  
+           localStorageKey+=1;  
+   }
+
+//----------------------------------------------------------------------------------------------------------------------------
       const response=await fetch("https://hookb.in/9X8EqV7bpNtENEeQnZpq",{
           method:'PUT',
           headers:{
               "Content-type":"application/json"     //no-cors
                  },
-          body:JSON.stringify(currentUserInfo)
+          body:JSON.stringify(currentUserInfoInput)
       });
       const resDataJson=await response.json();
 
-      return [resDataJson,JSON.stringify(currentUserInfo)];  
+      return [resDataJson,JSON.stringify(currentUserInfoInput)];  
                                                             
     }
     //----------------------------------------------------------------------------------------------------
- 
+ ///--------------------Compare Current User Input with Dom
 
     document.querySelector('.button').addEventListener('click',()=>{put().then(function(data){
         if(data==="YOUNG"){
@@ -241,7 +291,7 @@ if(emptyInputValidator()==="FIRSTNAME"){
                 titleMsg.innerText="Please fill out the Job Title field";
         }else{
             let newUserInfo=JSON.parse(data[1]);
-            console.log(dataParsed);
+          
             // data passed is array promise returned contains succesfull response object from fetch as well as obj of items passed to fake API
             function finalizeData(pb,cb){
                 pb();
@@ -271,8 +321,8 @@ if(emptyInputValidator()==="FIRSTNAME"){
             finalizeData(pobUpBoxSetUp,updateUser);
         }
     },function(error){ 
-        console.log("hello");
-        console.log("this is err" + error)
+        //console.log("hello");
+       // console.log("this is err" + error)
     }  //  not quite sure how the "reject" could be called in the async function which fires the 2nd function of .then      
 )                                                                            //....seems to fire if any error is found in the asyn fn() and wrap it in promise
 });
