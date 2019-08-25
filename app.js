@@ -85,7 +85,7 @@ dropDownBtn.addEventListener('click',function(){
 
 
 
-///                       "OLD WAY" OF DOING THINGS
+///                       "OLD WAY" OF DOING HTTP
 //----------------------------------------------------------------------------------------------
 // const quickHTTP=function(){
 //     this.http=new XMLHttpRequest();
@@ -165,20 +165,20 @@ function putCallReset(){
         document.querySelector('.ititle').removeAttribute('style');
         document.querySelector(".fname").removeAttribute('style');
         let bdayLabel=document.querySelector(".birthdateLableErr")
-        bdayLabel.removeAttribute('style');
-        bdayLabel.innerText="Birthdate";
+            bdayLabel.removeAttribute('style');
+            bdayLabel.innerText="Birthdate";
         let emailLable= document.querySelector(".emailLableErr");
-        emailLable.removeAttribute('style');
-        emailLable.innerText="Email";
+            emailLable.removeAttribute('style');
+            emailLable.innerText="Email";
         let fnameLable=document.querySelector(".fnameLableErr");
-        fnameLable.removeAttribute('style');
-        fnameLable.innerText="First Name";
+            fnameLable.removeAttribute('style');
+            fnameLable.innerText="First Name";
         let lnameLabel=document.querySelector(".lnameLableErr");
-        lnameLabel.removeAttribute('style');
-        lnameLabel.innerText="Last Name";
+            lnameLabel.removeAttribute('style');
+            lnameLabel.innerText="Last Name";
         let jobTitleLable= document.querySelector(".jobTitleLableErr");
-        jobTitleLable.removeAttribute('style');
-        jobTitleLable.innerText="Job Title";
+            jobTitleLable.removeAttribute('style');
+            jobTitleLable.innerText="Job Title";
 }
 ///-----------------------------------This is a note... we can pass these object so they will evaluate on PUT---------------------------------------------------------------------
 function passCurrentUserInfoInput (){
@@ -201,6 +201,9 @@ function passRenderedUserInfoInput (){
         birthday: document.querySelector('.birthdate').innerText
     }
 }
+
+
+
 let put= async () => {
 //-------------------------------Remove previous DOM validation errors
 
@@ -219,28 +222,26 @@ if(emptyInputValidator()==="FIRSTNAME"){
     return "EMAIL";
 }
 //----------------------------------------fetch using current user input----------------------------------------------------------------
- let currentUserInfoInput=passCurrentUserInfoInput ();
- let renderedUserInfoInput=passRenderedUserInfoInput ();
+ let currentUserInfoInput=passCurrentUserInfoInput();
+ let renderedUserInfoInput=passRenderedUserInfoInput();
 
 
  ///---------------------------This is a note...the difference between previous user and current user is stored in history
 
- let localStorageKey=1;
 
- propertiesThatChanged=[];
+localStorage.clear();
+ propertiesThatChanged={};  // This is a note .... Data goes from  1) This Array to 2) Each item gets stingified 3)
  for(const key in currentUserInfoInput){
         if(currentUserInfoInput[key]!==renderedUserInfoInput[key]){  
-                 propertiesThatChanged.push({[key]:renderedUserInfoInput[key]})
-                 console.log(propertiesChanged)
+                 propertiesThatChanged[[key]]=renderedUserInfoInput[key]           
              }
           }
-  for (let i=0;i<propertiesThatChanged.length;i++){
-        let stringfiedHistoryItem=JSON.stringify(propertiesThatChanged[i]);
-         let dateUpdated=new Date(Date.now()).toDateString(); 
-         console.log(stringfiedHistoryItem)       
-           localStorage.setItem(localStorageKey,stringfiedHistoryItem,dateUpdated);  
-           localStorageKey+=1;  
-   }
+if(Object.keys(propertiesThatChanged).length>0){
+         let dateUpdated=new Date(Date.now()).toDateString();       
+            console.log(propertiesThatChanged);
+         let localStorageKey=1;
+        localStorage.setItem(localStorageKey,JSON.stringify(propertiesThatChanged),dateUpdated); 
+}
 
 //----------------------------------------------------------------------------------------------------------------------------
       const response=await fetch("https://hookb.in/9X8EqV7bpNtENEeQnZpq",{
@@ -253,8 +254,7 @@ if(emptyInputValidator()==="FIRSTNAME"){
       const resDataJson=await response.json();
 
       return [resDataJson,JSON.stringify(currentUserInfoInput)];  
-                                                            
-    }
+}                                                        
     //----------------------------------------------------------------------------------------------------
  ///--------------------Compare Current User Input with Dom
 
@@ -293,12 +293,14 @@ if(emptyInputValidator()==="FIRSTNAME"){
             let newUserInfo=JSON.parse(data[1]);
           
             // data passed is array promise returned contains succesfull response object from fetch as well as obj of items passed to fake API
-            function finalizeData(pb,cb){
-                pb();
+            function finalizeData(pobUpBoxSetUp,updateUser,updateHistory){
+                pobUpBoxSetUp();
               let submitPopUp=document.querySelector('.submitPopUp');
               submitPopUp.addEventListener('click',function(){
-                cb();
+                updateUser();
               })
+              updateHistory();
+
             }
             function pobUpBoxSetUp(){
                 let popUp=document.querySelector('.popBox');
@@ -317,8 +319,36 @@ if(emptyInputValidator()==="FIRSTNAME"){
               document.querySelector(".jobtitle").innerText=newUserInfo.jobTitle;
               document.querySelector(".birthdate").innerText=newUserInfo.birthday;
             }
+            function updateHistory(){
+                let historyObject=JSON.parse(localStorage.getItem(1));
+                for(const userField in historyObject){
+                     let mainHistoryContainer=document.querySelector(".historyContainer");
+                     let historyRow=document.createElement('div');
+                        historyRow.classList.add("historyRow");
+                     let historyDate=document.createElement('div');
+                        historyDate.classList.add('historyDate');
+                     let historyKeyValueStore=document.createElement('div');
+                        historyKeyValueStore.classList.add("historyKeyValueStore");
+                     let historyKey=document.createElement('div');
+                        historyKey.classList.add('historyKey');
+                     let historyValue=document.createElement('div');
+                       historyValue.classList.add("historyValue"); 
+                     let historyValueText=document.createTextNode(historyObject[userField]);
+                     let historyKeyText=document.createTextNode(userField)
+                     let historyDateText=document.createTextNode(new Date(Date.now()).toDateString());
 
-            finalizeData(pobUpBoxSetUp,updateUser);
+                        historyValue.appendChild(historyValueText);
+                        historyKey.appendChild(historyKeyText);
+                        historyDate.appendChild(historyDateText);
+                        historyKeyValueStore.appendChild(historyKey);
+                        historyKeyValueStore.appendChild(historyValue);
+                        historyRow.appendChild(historyDate);
+                        historyRow.appendChild(historyKeyValueStore);
+                        mainHistoryContainer.appendChild(historyRow);
+                }
+            }
+
+            finalizeData(pobUpBoxSetUp,updateUser,updateHistory);
         }
     },function(error){ 
         //console.log("hello");
@@ -326,4 +356,14 @@ if(emptyInputValidator()==="FIRSTNAME"){
     }  //  not quite sure how the "reject" could be called in the async function which fires the 2nd function of .then      
 )                                                                            //....seems to fire if any error is found in the asyn fn() and wrap it in promise
 });
-    
+/* 
+<div class="historyContainer">
+    <div class="historyRow">                                 //column flex
+            <div class="historyDate hr">03/23/2020 </div>
+        <div class="historyKeyValueStore">                       //row flex
+                <div class="historyKey hr">First Name </div>
+                <div class="historyValue hr"> Todd </div>
+        </div>                       
+    </div> 
+</div>
+*/
